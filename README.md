@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Laravel Breeze - Next.js Edition ▲
 
-## Getting Started
+## Introduction
 
-First, run the development server:
+This repository is an implementation of the [Laravel Breeze](https://laravel.com/docs/starter-kits) application / authentication starter kit frontend in [Next.js](https://nextjs.org). All of the authentication boilerplate is already written for you - powered by [Laravel Sanctum](https://laravel.com/docs/sanctum), allowing you to quickly begin pairing your beautiful Next.js frontend with a powerful Laravel backend.
+
+## Official Documentation
+
+### Installation
+
+First, create a Next.js compatible Laravel backend by installing Laravel Breeze into a [fresh Laravel application](https://laravel.com/docs/installation) and installing Breeze's API scaffolding:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Create the Laravel application...
+laravel new next-backend
+
+cd next-backend
+
+# Install Breeze and dependencies...
+composer require laravel/breeze --dev
+
+php artisan breeze:install api
+
+# Run database migrations...
+php artisan migrate
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Next, ensure that your application's `APP_URL` and `FRONTEND_URL` environment variables are set to `http://localhost:8000` and `http://localhost:3000`, respectively.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+After defining the appropriate environment variables, you may serve the Laravel application using the `serve` Artisan command:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Serve the application...
+php artisan serve
+```
 
-## Learn More
+Next, clone this repository and install its dependencies with `yarn install` or `npm install`. Then, copy the `.env.example` file to `.env.local` and supply the URL of your backend:
 
-To learn more about Next.js, take a look at the following resources:
+```
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Finally, run the application via `npm run dev`. The application will be available at `http://localhost:3000`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+npm run dev
+```
 
-## Deploy on Vercel
+> Note: Currently, we recommend using `localhost` during local development of your backend and frontend to avoid CORS "Same-Origin" issues.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Authentication Hook
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This Next.js application contains a custom `useAuth` React hook, designed to abstract all authentication logic away from your pages. In addition, the hook can be used to access the currently authenticated user:
+
+```js
+const ExamplePage = () => {
+    const { logout, user } = useAuth({ middleware: 'auth' })
+
+    return (
+        <>
+            <p>{user?.name}</p>
+
+            <button onClick={logout}>Sign out</button>
+        </>
+    )
+}
+
+export default ExamplePage
+```
+
+> Note: You will need to use [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining) (`user?.name` instead of `user.name`) when accessing properties on the user object to account for Next.js's initial server-side render.
